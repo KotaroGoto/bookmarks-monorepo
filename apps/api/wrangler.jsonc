@@ -17,6 +17,6 @@
 		},
 	],
 	"vars": {
-		"ALLOWED_ORIGIN": "http://localhost:5173",
+		"ALLOWED_ORIGIN": "https://bookmarks-web-ahn.pages.dev/",
 	},
 }
