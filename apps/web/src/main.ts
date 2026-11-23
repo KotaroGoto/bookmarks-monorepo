@@ -22,12 +22,12 @@ const list = qs<HTMLUListElement>("#list");
 const reload = qs<HTMLButtonElement>("#reload");
 const FIELDS = ["url", "title", "tags"] as const;
 
-reload.addEventListener("click", async () => {
+async function onReload(): Promise<void> {
   dispatch({ type: "load-started" });
   dispatch(await load());
-});
+}
 
-form.addEventListener("submit", async (event) => {
+async function onSubmit(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   const values = getFormValues(form, FIELDS);
   try {
@@ -45,8 +45,9 @@ form.addEventListener("submit", async (event) => {
   } catch (e) {
     dispatch({ type: "load-failed", message: messageOf(e) });
   }
-});
-list.addEventListener("click", async (event) => {
+}
+
+async function onListClick(event: MouseEvent): Promise<void> {
   const button = event.target;
   if (!(button instanceof HTMLButtonElement)) return;
   const id = button.dataset.id;
@@ -57,5 +58,10 @@ list.addEventListener("click", async (event) => {
   } catch (e) {
     dispatch({ type: "load-failed", message: messageOf(e) });
   }
-});
+}
+
+reload.addEventListener("click", () => void onReload());
+form.addEventListener("submit", (event) => void onSubmit(event));
+list.addEventListener("click", (event) => void onListClick(event));
+
 render(state);
