@@ -7,26 +7,26 @@ beforeEach(() => {
 });
 
 describe("createStore", () => {
-  it("タイトルだけ更新してもタグが残る", () => {
-    const created = store.create({
+  it("タイトルだけ更新してもタグが残る", async () => {
+    const created = await store.create({
       title: "旧",
       url: "https://example.com/x",
       tags: ["keep"],
       note: null,
     });
-    const updated = store.update(created.id, { title: "新" });
+    const updated = await store.update(created.id, { title: "新" });
     expect(updated?.title).toBe("新");
     expect(updated?.tags).toEqual(["keep"]);
   });
 
-  it("削除したものは見つからない", () => {
-    const created = store.create({
+  it("削除したものは見つからない", async () => {
+    const created = await store.create({
       title: "x",
       url: "https://example.com/x",
       tags: [],
       note: null,
     });
-    expect(store.remove(created.id)).toBe(true);
-    expect(store.find(created.id)).toBe(undefined);
+    expect(await store.remove(created.id)).toBe(true);
+    expect(await store.find(created.id)).toBe(undefined);
   });
 });

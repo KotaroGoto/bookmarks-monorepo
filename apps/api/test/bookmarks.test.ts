@@ -4,10 +4,15 @@ import { createApp } from "../src/app.ts";
 import { createStore, type Store } from "../src/store.ts";
 
 function setup(store: Store) {
-  return testClient(createApp(store), undefined, undefined, {
+  const app = createApp(store, {
+    apiToken: "test-token",
+    allowedOrigin: "http://localhost:5173",
+  });
+  return testClient(app, undefined, undefined, {
     headers: { authorization: "Bearer test-token" },
   });
 }
+
 let client: ReturnType<typeof setup>;
 beforeEach(() => {
   client = setup(createStore(":memory:"));
@@ -53,15 +58,15 @@ describe("POST /bookmarks", () => {
 });
 describe("GET /bookmarks/:id", () => {
   const emptyStore: Store = {
-    list: () => [],
-    find: () => undefined,
-    create: (input) => ({
+    list: async () => [],
+    find: async () => undefined,
+    create: async (input) => ({
       id: "1",
       createdAt: "2026-07-30T00:00:00.000Z",
       ...input,
     }),
-    update: () => undefined,
-    remove: () => false,
+    update: async () => undefined,
+    remove: async () => false,
   };
   it("見つからなければ404を返す", async () => {
     const res = await setup(emptyStore).bookmarks[":id"].$get({
