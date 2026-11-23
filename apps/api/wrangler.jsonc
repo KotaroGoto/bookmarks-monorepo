@@ -1,16 +1,22 @@
 {
-  "name": "bookmarks-api",
-  "main": "src/worker.ts",
-  "compatibility_date": "2026-10-01",
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "bookmarks",
-      "database_id": "local-development-placeholder",
-      "migrations_dir": "drizzle",
-    },
-  ],
-  "vars": {
-    "ALLOWED_ORIGIN": "http://localhost:5173",
-  },
+	"name": "bookmarks-api",
+	"main": "src/worker.ts",
+	"compatibility_date": "2026-10-01",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "bookmarks",
+			"database_id": "44e48a3d-eb8d-450e-8d57-94089e20b35a",
+			"migrations_dir": "drizzle",
+		},
+		{
+			"binding": "bookmarks",
+			"database_name": "bookmarks",
+			"database_id": "44e48a3d-eb8d-450e-8d57-94089e20b35a",
+			"remote": true
+		},
+	],
+	"vars": {
+		"ALLOWED_ORIGIN": "http://localhost:5173",
+	},
 }
