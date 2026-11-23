@@ -1,10 +1,8 @@
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
-import * as schema from "./db/schema.ts";
-import { randomUUID } from "node:crypto";
 import { eq, inArray } from "drizzle-orm";
-//import { db } from "./db/client.ts";
+import * as schema from "./db/schema.ts";
 import { bookmarks, tags, bookmarkTags } from "./db/schema.ts";
 import type { BookmarkRow } from "./db/schema.ts";
 import type {
@@ -14,11 +12,11 @@ import type {
 } from "@bookmarks/shared";
 
 export type Store = {
-  list(tag: string | undefined): Bookmark[];
-  find(id: string): Bookmark | undefined;
-  create(input: CreateBookmark): Bookmark;
-  update(id: string, input: UpdateBookmark): Bookmark | undefined;
-  remove(id: string): boolean;
+  list(tag: string | undefined): Promise<Bookmark[]>;
+  find(id: string): Promise<Bookmark | undefined>;
+  create(input: CreateBookmark): Promise<Bookmark>;
+  update(id: string, input: UpdateBookmark): Promise<Bookmark | undefined>;
+  remove(id: string): Promise<boolean>;
 };
 
 function toBookmark(row: BookmarkRow, names: string[]): Bookmark {
@@ -63,24 +61,26 @@ export function createStore(file: string): Store {
       .run();
   }
 
-  function find(id: string): Bookmark | undefined {
+  async function find(id: string): Promise<Bookmark | undefined> {
     const row = db.select().from(bookmarks).where(eq(bookmarks.id, id)).get();
     if (row === undefined) return undefined;
     return toBookmark(row, tagNamesOf(id));
   }
 
   return {
-    list(tag) {
+    async list(tag) {
       const rows = db.select().from(bookmarks).all();
       const result = rows.map((row) => toBookmark(row, tagNamesOf(row.id)));
-      return tag === undefined ? result : result.filter((b) => b.tags.includes(tag));
+      return tag === undefined
+        ? result
+        : result.filter((b) => b.tags.includes(tag));
       //return tag === undefined ? result : result.filter((b) => b.tags.length > 0);
     },
 
     find,
 
-    create(input) {
-      const id = randomUUID();
+    async create(input) {
+      const id = crypto.randomUUID();
       const createdAt = new Date().toISOString();
       db.transaction((tx) => {
         tx.insert(bookmarks)
@@ -104,8 +104,8 @@ export function createStore(file: string): Store {
       };
     },
 
-    update(id, input) {
-      const current = find(id);
+    async update(id, input) {
+      const current = await find(id);
       if (current === undefined) return undefined;
       db.transaction((tx) => {
         tx.update(bookmarks)
@@ -121,9 +121,9 @@ export function createStore(file: string): Store {
           linkTags(tx, id, input.tags);
         }
       });
-      return find(id);
+      return await find(id);
     },
-    remove(id) {
+    async remove(id) {
       return db.delete(bookmarks).where(eq(bookmarks.id, id)).run().changes > 0;
     },
   };

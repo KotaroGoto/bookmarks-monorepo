@@ -1,11 +1,11 @@
-import { randomUUID } from "node:crypto";
+//import { randomUUID } from "node:crypto";
 import { createMiddleware } from "hono/factory";
 import type { ErrorBody } from "./errors.ts";
 
 export type Env = { Variables: { requestId: string } };
 
 export const withRequestId = createMiddleware<Env>(async (c, next) => {
-  const requestId = randomUUID();
+  const requestId = crypto.randomUUID();
   c.set("requestId", requestId);
   const started = performance.now();
   await next();
@@ -15,16 +15,14 @@ export const withRequestId = createMiddleware<Env>(async (c, next) => {
   );
 });
 
-export const requireToken = createMiddleware<Env>(async (c, next) => {
-  const expected = process.env["API_TOKEN"];
-  if (expected === undefined) {
-    throw new Error("API_TOKEN が設定されていません");
-  }
-  if (c.req.header("authorization") !== `Bearer ${expected}`) {
-    return c.json<ErrorBody, 401>(
-      { error: { code: "unauthorized", message: "トークンが必要です" } },
-      401,
-    );
-  }
-  await next();
-});
+export function requireToken(token: string) {
+  return createMiddleware<Env>(async (c, next) => {
+    if (c.req.header("authorization") !== `Bearer ${token}`) {
+      return c.json<ErrorBody, 401>(
+        { error: { code: "unauthorized", message: "トークンが必要です" } },
+        401,
+      );
+    }
+    await next();
+  });
+}
