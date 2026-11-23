@@ -1,0 +1,13 @@
+{
+  "name": "@bookmarks/web",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@bookmarks/api": "^1.0.0",
+    "@bookmarks/shared": "^1.0.0",
+    "hono": "^4.13.20"
+  }
+}

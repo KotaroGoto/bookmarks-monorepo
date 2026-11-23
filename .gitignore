@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+apps/api/data/
+.wrangler/
+.dev.vars
+.env.development
