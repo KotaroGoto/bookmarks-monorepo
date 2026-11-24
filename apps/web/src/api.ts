@@ -8,9 +8,15 @@ export async function fetchBookmarks(tag?: string): Promise<Bookmark[]> {
   if (!res.ok) {
     throw new Error(`一覧を取得できませんでした（HTTP ${res.status}）`);
   }
+<<<<<<< HEAD
   // return res.json();
   const data: any = await res.json();
   return data.items;
+=======
+  return res.json();
+  //const data: any = await res.json();
+  //return data.items;
+>>>>>>> eafd9a589f8f1f1dc459fe4e185645bfe486c050
 }
 
 export async function addBookmark(input: CreateBookmark): Promise<Bookmark> {
