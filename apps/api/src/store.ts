@@ -61,7 +61,7 @@ export function createStore(file: string): Store {
       .run();
   }
 
-  async function find(id: string): Bookmark | undefined {
+  async function find(id: string): Promise<Bookmark | undefined> {
     const row = db.select().from(bookmarks).where(eq(bookmarks.id, id)).get();
     if (row === undefined) return undefined;
     return toBookmark(row, tagNamesOf(id));
